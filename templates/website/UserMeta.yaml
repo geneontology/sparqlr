@@ -22,51 +22,51 @@ query: >
   PREFIX BP: <http://purl.obolibrary.org/obo/GO_0008150>
   PREFIX MF: <http://purl.obolibrary.org/obo/GO_0003674>
   PREFIX CC: <http://purl.obolibrary.org/obo/GO_0005575>
-            
-	SELECT  ?name (GROUP_CONCAT(distinct ?organization;separator=";") AS ?organizations) 
- 	              (GROUP_CONCAT(distinct ?affiliationIRI;separator=";") AS ?affiliationsIRI) 
-                (GROUP_CONCAT(distinct ?affiliation;separator=";") AS ?affiliations) 
-								(GROUP_CONCAT(distinct ?gocam;separator=";") as ?gocams)
-								(GROUP_CONCAT(distinct ?date;separator=";") as ?gocamsDate)
-								(GROUP_CONCAT(distinct ?title;separator=";") as ?gocamsTitle)
-								(GROUP_CONCAT(distinct ?goid;separator=";") as ?bpIDs)
-								(GROUP_CONCAT(distinct ?goname;separator=";") as ?bpNames)
-								(GROUP_CONCAT(distinct ?gpid;separator=";") as ?gpIDs)
-								(GROUP_CONCAT(distinct ?gpname;separator=";") as ?gpNames)
-  WHERE 
+
+  SELECT ?name (GROUP_CONCAT(distinct ?organization;separator=";") AS ?organizations) 
+               (GROUP_CONCAT(distinct ?affiliationIRI;separator=";") AS ?affiliationsIRI) 
+               (GROUP_CONCAT(distinct ?affiliation;separator=";") AS ?affiliations) 
+               (GROUP_CONCAT(distinct ?gocam;separator=";") as ?gocams)
+               (GROUP_CONCAT(distinct ?date;separator=";") as ?gocamsDate)
+               (GROUP_CONCAT(distinct ?title;separator=";") as ?gocamsTitle)
+               (GROUP_CONCAT(distinct ?goid;separator=";") as ?bpIDs)
+               (GROUP_CONCAT(distinct ?goname;separator=";") as ?bpNames)
+               (GROUP_CONCAT(distinct ?gpid;separator=";") as ?gpIDs)
+               (GROUP_CONCAT(distinct ?gpname;separator=";") as ?gpNames)
+  WHERE
   {
     BIND( "{{orcid}}" as ?orcid) .              
     BIND(IRI(?orcid) as ?orcidIRI) .
-              
+
     # Getting some information on the model
     GRAPH ?gocam 
     {
-      ?gocam 	metago:graphType metago:noctuaCam ;
-              dc:date ?date ;
-              dc:title ?title ;
-              dc:contributor ?orcid .
-                
-      ?entity rdf:type owl:NamedIndividual .
-    	?entity rdf:type ?goid .
-    
-      ?s enabled_by: ?gpentity .    
-			?gpentity rdf:type ?gpid .
-		  FILTER(?gpid != owl:NamedIndividual) .
-  	}
+      ?gocam metago:graphType metago:noctuaCam ;
+             dc:date ?date ;
+             dc:title ?title ;
+             dc:contributor ?orcid .
 
-              
+      ?entity rdf:type owl:NamedIndividual .
+      ?entity rdf:type ?goid .
+
+      ?s enabled_by: ?gpentity .    
+      ?gpentity rdf:type ?gpid .
+      FILTER(?gpid != owl:NamedIndividual) .
+    }
+
+
     VALUES ?GO_class { BP: } . 
     # rdf:type faster then subClassOf+ but require filter 			
     # ?goid rdfs:subClassOf+ ?GO_class .
     ?entity rdf:type ?GO_class .
-  			
-  	# Filtering out the root BP, MF & CC terms
-		filter(?goid != MF: )
-  	filter(?goid != BP: )
-		filter(?goid != CC: )
-  
-  	?goid rdfs:label ?goname .
-              
+
+    # Filtering out the root BP, MF & CC terms
+    filter(?goid != MF: )
+    filter(?goid != BP: )
+    filter(?goid != CC: )
+
+    ?goid rdfs:label ?goname .
+
     # Getting some information on the contributor
     optional { ?orcidIRI rdfs:label ?name } .
     BIND(IF(bound(?name), ?name, ?orcid) as ?name) .
@@ -75,8 +75,7 @@ query: >
                 ?orcidIRI has_affiliation: ?affiliationIRI .
                 ?affiliationIRI rdfs:label ?affiliation
               } .
-              
-  	?gpid rdfs:label ?gpname .
-              
+
+    ?gpid rdfs:label ?gpname .
   }
-	GROUP BY ?name
+  GROUP BY ?name
