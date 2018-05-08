@@ -1,0 +1,18 @@
+title:
+  "Nb GO-CAMs"
+description:
+  "Get the current number of production GO-CAMs"
+category:
+  "GO-CAM"
+endpoint:
+  "http://rdf.geneontology.org/blazegraph/sparql"
+query: >
+  PREFIX metago: <http://model.geneontology.org/>
+
+  SELECT (COUNT(distinct ?cam) AS ?cams)
+  WHERE 
+  {
+    GRAPH ?cam {
+      ?cam metago:graphType metago:noctuaCam .
+    }
+  }

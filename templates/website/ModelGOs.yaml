@@ -1,0 +1,35 @@
+title:
+  "GO-CAM GO-Terms"
+description:
+  "Get the GO-Terms associated with a given GO-CAM"
+category:
+  "GO-CAM"
+endpoint:
+  "http://rdf.geneontology.org/blazegraph/sparql"
+variables:
+  - name: model
+    comment: The ID of the GO-CAM (e.g 5716c41300000223)
+query: >
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX metago: <http://model.geneontology.org/>
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  PREFIX definition: <http://purl.obolibrary.org/obo/IAO_0000115>
+  PREFIX BP: <http://purl.obolibrary.org/obo/GO_0008150>
+  PREFIX MF: <http://purl.obolibrary.org/obo/GO_0003674>
+  PREFIX CC: <http://purl.obolibrary.org/obo/GO_0005575>
+
+  SELECT distinct ?GO_class ?goid ?goname ?definition
+  WHERE 
+  {
+    GRAPH metago:"{{ model }}" {
+      ?entity rdf:type owl:NamedIndividual .
+      ?entity rdf:type ?goid
+    }
+
+    VALUES ?GO_class { BP: MF: CC:  } . 
+    ?goid rdfs:subClassOf+ ?GO_class .
+    ?goid rdfs:label ?goname .
+    ?goid definition: ?definition .
+  }
+  ORDER BY DESC(?GO_class)
