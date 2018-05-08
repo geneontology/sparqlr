@@ -12,21 +12,21 @@ query: >
   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
   PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
   PREFIX has_affiliation: <http://purl.obolibrary.org/obo/ERO_0000066> 
-            
-  SELECT  ?orcid ?name    (GROUP_CONCAT(distinct ?organization;separator="` + separator + `") AS ?organizations) 
-                          (GROUP_CONCAT(distinct ?affiliation;separator="` + separator + `") AS ?affiliations) 
-                          (COUNT(distinct ?cam) AS ?cams)
-  WHERE 
+
+  SELECT ?orcid ?name (GROUP_CONCAT(distinct ?organization;separator=",") AS ?organizations) 
+                      (GROUP_CONCAT(distinct ?affiliation;separator=",") AS ?affiliations) 
+                      (COUNT(distinct ?cam) AS ?cams)
+  WHERE
   {
     ?cam metago:graphType metago:noctuaCam .
     ?cam dc:contributor ?orcid .
-                    
+
     BIND( IRI(?orcid) AS ?orcidIRI ).
-                    
+
     optional { ?orcidIRI rdfs:label ?name } .
     optional { ?orcidIRI vcard:organization-name ?organization } .
     optional { ?orcidIRI has_affiliation: ?affiliation } .
-              
-    BIND(IF(bound(?name), ?name, ?orcid) as ?name) .            
+
+    BIND(IF(bound(?name), ?name, ?orcid) as ?name) .
   }
   GROUP BY ?orcid ?name
