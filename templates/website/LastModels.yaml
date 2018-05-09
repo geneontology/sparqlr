@@ -9,6 +9,7 @@ endpoint:
 variables:
   - name: number
     comment: The number of most recent GO-CAMs to retrieve
+    default: 3
 query: >
   PREFIX metago: <http://model.geneontology.org/>
   PREFIX dc: <http://purl.org/dc/elements/1.1/>

@@ -8,7 +8,8 @@ endpoint:
   "http://rdf.geneontology.org/blazegraph/sparql"
 variables:
   - name: model
-    comment: The ID of the GO-CAM (e.g 5716c41300000223)
+    comment: The ID of the GO-CAM
+    default: 5716c41300000223
 query: >
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

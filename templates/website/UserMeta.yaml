@@ -8,7 +8,8 @@ endpoint:
   "http://rdf.geneontology.org/blazegraph/sparql"
 variables:
   - name: orcid
-    comment: The ORCID of a User (e.g. http://orcid.org/0000-0003-1074-8103).
+    comment: The ORCID of a User
+    default: http://orcid.org/0000-0003-1074-8103
 query: >
   PREFIX metago: <http://model.geneontology.org/>
   PREFIX dc: <http://purl.org/dc/elements/1.1/>
