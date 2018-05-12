@@ -1,0 +1,49 @@
+title:
+  "Group Meta"
+description:
+  "Get Meta Information about a Given Group (affiliation of contributors)"
+category:
+  "GO-CAM"
+endpoint:
+  "http://rdf.geneontology.org/blazegraph/sparql"
+variables:
+  - name: groupName
+    comment: The Name of the group
+    default: MGI
+query: >
+  PREFIX metago: <http://model.geneontology.org/>
+  PREFIX dc: <http://purl.org/dc/elements/1.1/>
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+  PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
+  PREFIX has_affiliation: <http://purl.obolibrary.org/obo/ERO_0000066> 
+  PREFIX enabled_by: <http://purl.obolibrary.org/obo/RO_0002333>
+  PREFIX obo: <http://www.geneontology.org/formats/oboInOwl#>
+  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  PREFIX BP: <http://purl.obolibrary.org/obo/GO_0008150>
+  PREFIX MF: <http://purl.obolibrary.org/obo/GO_0003674>
+  PREFIX CC: <http://purl.obolibrary.org/obo/GO_0005575>
+            
+  SELECT ?url ?contrib ?contribName (COUNT(distinct ?gocam) AS ?gocams) 
+                                    (COUNT(distinct ?goid) AS ?bpids)
+  WHERE {
+    BIND("` + decodeURI(groupLabel) + `" as ?groupName) .
+    ?url rdfs:label ?groupName .  
+    ?orcidIRI has_affiliation: ?url .
+    ?orcidIRI rdfs:label ?name
+
+    GRAPH ?gocam {
+      ?gocam metago:graphType metago:noctuaCam ;
+             dc:contributor ?contrib .    
+      BIND(IRI(?contrib) as ?contribIRI) .    
+      ?entity rdf:type owl:NamedIndividual .
+      ?entity rdf:type ?goid
+    }
+    filter(?contribIRI = ?orcidIRI) .
+    ?contribIRI rdfs:label ?contribName .
+      
+    ?entity rdf:type BP: .
+    # Filtering out the root BP, MF & CC terms
+    filter(?goid != BP: )
+  }
+  GROUP BY ?url ?contrib ?contribName
