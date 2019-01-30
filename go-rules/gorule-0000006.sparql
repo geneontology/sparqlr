@@ -1,0 +1,33 @@
+# IEP and HEP usage is restricted to terms from the Biological Process ontology
+#
+# Annoton:
+#
+#
+#
+#
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX definition: <http://purl.obolibrary.org/obo/IAO_0000115>
+PREFIX IEP: <http://purl.obolibrary.org/obo/ECO_0000270>
+PREFIX HEP: <http://purl.obolibrary.org/obo/ECO_0007007>
+PREFIX axiom_has_evidence: <http://purl.obolibrary.org/obo/RO_0002612>
+PREFIX MF: <http://purl.obolibrary.org/obo/GO_0003674>
+PREFIX CC: <http://purl.obolibrary.org/obo/GO_0005575>
+PREFIX BP: <http://purl.obolibrary.org/obo/GO_0008150>
+
+SELECT *
+WHERE {
+
+    # Find where the evidence is IEP and HEP
+    ?axiom owl:annotatedSource ?sub ;
+        owl:annotatedTarget ?obj .
+
+    VALUES ?etypes { IEP: HEP: } .
+    ?axiom axiom_has_evidence: ?e .
+    ?e a ?etypes .
+
+    # Find from above where the obj is a not Biological Process
+    VALUES ?not_bio_process { MF: CC: }
+    ?obj a ?not_bio_process .
+}
